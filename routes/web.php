@@ -1,11 +1,11 @@
 <?php
 
+use App\Http\Controllers\PostController;
 use App\Models\Post;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\PostController;
 
-use App\Models\Category; 
-
+use App\Models\Category;
+use App\Models\User;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,16 +19,15 @@ use App\Models\Category;
 */
 
 Route::get('/', function () {
-    return view ('home', [
+    return view('home', [
         "title" => "Home"
     ]);
 });
 
-
 Route::get('/about', function () {
-    return view('About', [
+    return view('about', [
         "title" => "About",
-        "name" => "Reza Dwiyana",
+        "name" => "Reza Dwiyana W",
         "email" => "rezadwiyana93@gmail.com",
         "image" => "reza.jpeg"
     ]);
@@ -36,22 +35,30 @@ Route::get('/about', function () {
 
 
 
-Route::get('/blog', [PostController::class, 'index']);
-Route:: get('posts/{post:slug}', [postController::class, 'show']);
 
-Route::get('/categories', function(){
+Route::get('/blog', [PostController::class, 'index']);
+// halaman single post
+Route::get('posts/{post:slug}', [PostController::class, 'show']);
+
+Route::get('/categories', function () {
     return view('categories', [
         'title' => 'Post Categories',
+        'active' => 'categories',
         'categories' => Category::all()
     ]);
 });
 
+Route::get('/categories/{category:slug}', function (Category $category) {
+    return view('posts', [
+        'title' => "Post By Category : $category->name",
+        'active' => 'categories',
+        'posts' => $category->posts->load('category', 'author')
+    ]);
+});
 
-Route::get('/categories/{category:slug}', function(Category $category) {
-    return view('category', [
-        'title' => $category->name,
-        'posts' => $category->posts,
-        'category' => $category->name
-
+Route::get('/authors/{author:username}', function (User $author) {
+    return view('posts', [
+        'title' => "Post By Author : $author->name",
+        'posts' => $author->posts->load('category', 'author')
     ]);
 });

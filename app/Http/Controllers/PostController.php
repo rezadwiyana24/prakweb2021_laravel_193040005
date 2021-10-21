@@ -7,11 +7,13 @@ use App\Models\Post;
 
 class PostController extends Controller
 {
-    public function index ()
+    public function index()
     {
-        return view('Posts', [
-            "title" => "Posts",
-            "posts" => Post::all()
+        return view('posts', [
+            "title" => "All Posts",
+            // "posts" => Post::all()
+            "active" => 'posts',
+            "posts" => Post::latest()->get()
         ]);
     }
 
@@ -19,6 +21,7 @@ class PostController extends Controller
     {
         return view('post', [
             "title" => "Single Post",
+            "active" => 'posts',
             "post" => $post
         ]);
     }
