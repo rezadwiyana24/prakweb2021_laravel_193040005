@@ -1,25 +1,73 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-danger">
-  <div class="container">
-      <a class="navbar-brand" href="/">WPU Blog</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav">
-          <li class="nav-item">
-          <a class="nav-link {{ ($active === "home") ? 'active' : '' }}" href="/">Home</a>
-          </li>
-          <li class="nav-item">
-          <a class="nav-link {{ ($active === "about") ? 'active' : '' }}" href="/about">About</a>
-          </li>
-          <li class="nav-item">
-          <a class="nav-link {{ ($active === "posts") ? 'active' : '' }}" href="/blog">Blog</a>
-          </li>
-        </li>
-        <li class="nav-item">
-        <a class="nav-link {{ ($active === "categories") ? 'active' : '' }}" href="/categories">Categories</a>
-        </li>
-      </ul>
-      </div>
-  </div>
-  </nav>
+<?php
+
+use App\Http\Controllers\DashboardController;
+use App\Models\Category;
+
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PostController;
+use App\Http\Controllers\LoginController;
+use App\Http\Controllers\RegisterController;
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider within a group which
+| contains the "web" middleware group. Now create something great!
+|
+*/
+
+Route::get('/', function () {
+    return view('home', [
+        "title" => "Home",
+        'active' => 'home'
+    ]);
+});
+
+Route::get('/about', function () {
+    return view('about', [
+        "title" => "About",
+        'active' => 'about',
+        "name" => "Reza Dwiyana",
+        "email" => "rezadwiyana93@gmail.com",
+        "image" => "reza.jpeg"
+    ]);
+});
+
+Route::get('/posts', [PostController::class, 'index']);
+Route::get('posts/{post:slug}', [PostController::class, 'show']);
+
+Route::get('/categories', function () {
+    return view('categories', [
+        'title' => 'Post Categories',
+        'active' => 'categories',
+        'categories' => Category::all()
+    ]);
+});
+
+//Login
+Route::get('/login', [LoginController::class, 'index'])->name('login')->middleware('guest');
+Route::post('/login', [LoginController::class, 'authenticate']);
+Route::post('/logout', [LoginController::class, 'logout']);
+//Register
+Route::get('/register', [RegisterController::class, 'index'])->middleware('guest');
+Route::post('/register', [RegisterController::class, 'store']);
+//Dashboard
+Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('auth');
+
+// Route::get('/categories/{category:slug}', function (Category $category) {
+//     return view('posts', [
+//         'title' => "Post By Category : $category->name",
+//         'active' => 'categories',
+//         'posts' => $category->posts->load('category', 'author')
+//     ]);
+// });
+
+// Route::get('/authors/{author:username}', function (User $author) {
+//     return view('posts', [
+//         'title' => "Post By Author : $author->name",
+//         'posts' => $author->posts->load('category', 'author')
+//     ]);
+// });
