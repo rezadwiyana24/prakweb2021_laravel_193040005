@@ -6982,6 +6982,8 @@
                 "Xdebug",
                 "environment",
                 "hhvm"
+
+                
             ],
             "support": {
                 "issues": "https://github.com/sebastianbergmann/environment/issues",
